@@ -18,13 +18,6 @@ export function formatDate(value?: string): string {
     }).format(date);
 }
 
-export function formatDateRange(startDate?: string, plannedEndDate?: string): string {
-    const start = formatDate(startDate);
-    const end = plannedEndDate ? formatDate(plannedEndDate) : "Non définie";
-    //
-    return `${start} → ${end}`;
-}
-
 export function toInputDate(value?: string): string {
     if (!value) {
         return "";

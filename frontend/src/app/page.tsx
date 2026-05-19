@@ -26,8 +26,7 @@ export default function HomePage() {
 
           <p className="mb-8 max-w-2xl text-base leading-7 text-slate-600">
             Ce module permet de créer, consulter, modifier, archiver et piloter
-            les projets. Le frontend travaille d’abord avec des données mockées,
-            puis sera connecté aux APIs Spring Boot.
+            les projets.
           </p>
 
           <div className="grid gap-4 md:grid-cols-2">

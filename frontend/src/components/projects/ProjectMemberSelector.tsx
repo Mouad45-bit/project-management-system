@@ -111,27 +111,28 @@ export function ProjectMemberSelector
                 <div className="grid gap-3">
                     {visibleUsers.map((user) => {
                         const isSelected = selectedIds.includes(user.id);
+                        const isDisabled = user.overloaded && !isSelected;
 
                         return (
                             <button
                                 key={user.id}
                                 type="button"
-                                disabled={user.overloaded}
+                                disabled={isDisabled}
                                 onClick={() => toggleUser(user.id)}
                                 className={cn(
                                     "flex w-full items-center justify-between gap-4 rounded-2xl border p-4 text-left transition",
-                                    user.overloaded
+                                    isDisabled
                                         ? "cursor-not-allowed border-amber-200 bg-amber-50"
                                         : isSelected
                                             ? "cursor-pointer border-slate-900 bg-slate-50"
-                                            : "cursor-pointer border-slate-200 bg-white hover:bg-slate-50",
+                                            : "cursor-pointer border-slate-200 bg-white hover:bg-slate-50"
                                 )}
                             >
                                 <div className="flex min-w-0 items-center gap-3">
                                     <div
                                         className={cn(
                                             "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-sm font-bold",
-                                            user.overloaded
+                                            isDisabled
                                                 ? "bg-amber-100 text-amber-700"
                                                 : isSelected
                                                     ? "bg-slate-900 text-white"

@@ -5,7 +5,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { AlertTriangle, ArrowLeft } from "lucide-react";
+import { AlertTriangle, Eye } from "lucide-react";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { ProjectForm } from "@/components/projects/ProjectForm";
 import {
@@ -20,9 +20,10 @@ import type {
 
 type ProjectEditViewProps = {
     projectId: number;
+    backHref: string;
 };
 
-export function ProjectEditView({ projectId }: ProjectEditViewProps) {
+export function ProjectEditView({ projectId, backHref }: ProjectEditViewProps) {
     const router = useRouter();
 
     const [project, setProject] = useState<ProjectDetailResponse | null>(null);
@@ -84,7 +85,12 @@ export function ProjectEditView({ projectId }: ProjectEditViewProps) {
             return;
         }
 
-        router.push(`/projects/${updatedProject.id}`);
+        const detailHref =
+            backHref.startsWith(`/projects/${updatedProject.id}`)
+                ? backHref
+                : `/projects/${updatedProject.id}?returnTo=${encodeURIComponent(backHref)}`;
+
+        router.push(detailHref);
     }
 
     if (isLoading) {
@@ -104,15 +110,9 @@ export function ProjectEditView({ projectId }: ProjectEditViewProps) {
                     eyebrow="Projet introuvable"
                     title="Modification impossible"
                     description="Le projet demandé n’existe pas dans les données actuelles."
-                    actions={
-                        <Link
-                            href="/projects"
-                            className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
-                        >
-                            <ArrowLeft size={17} />
-                            Retour aux projets
-                        </Link>
-                    }
+                    showBackButton
+                    backHref="/projects"
+                    backLabel="Retour aux projets"
                 />
 
                 <section className="rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center">
@@ -130,13 +130,18 @@ export function ProjectEditView({ projectId }: ProjectEditViewProps) {
                 eyebrow={project.code}
                 title="Modifier le projet"
                 description="Mettez à jour les informations générales, la planification, le statut et les membres désignés du projet."
+                showBackButton
+                backHref={backHref}
+                backLabel="Retour"
                 actions={
                     <Link
-                        href={`/projects/${project.id}`}
-                        className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                        href={`/projects/${project.id}?returnTo=${encodeURIComponent(
+                            `/projects/${project.id}/update?returnTo=${encodeURIComponent(backHref)}`,
+                        )}`}
+                        className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 text-sm font-semibold text-white transition hover:bg-slate-800"
                     >
-                        <ArrowLeft size={17} />
-                        Retour au détail
+                        <Eye size={17} className="text-white" />
+                        <span className="text-white">Voir détail</span>
                     </Link>
                 }
             />

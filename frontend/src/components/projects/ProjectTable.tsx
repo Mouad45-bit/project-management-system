@@ -2,18 +2,18 @@
 
 "use client";
 
-import type { ProjectListItemResponse } from "@/types/project";
-import { DateRange } from "@/components/ui/DateRange";
-import { ProjectStatusBadge } from "@/components/projects/ProjectStatusBadge";
-import { ProjectProgressBar } from "@/components/projects/ProjectProgressBar";
-import { ProjectActionButtons } from "@/components/projects/ProjectActionButtons";
+import type {ProjectListItemResponse} from "@/types/project";
+import {DateRange} from "@/components/ui/DateRange";
+import {ProjectStatusBadge} from "@/components/projects/ProjectStatusBadge";
+import {ProjectProgressBar} from "@/components/projects/ProjectProgressBar";
+import {ProjectActionButtons} from "@/components/projects/ProjectActionButtons";
 
 type ProjectTableProps = {
     projects: ProjectListItemResponse[];
     onArchive: (projectId: number) => void;
 };
 
-export function ProjectTable({ projects, onArchive }: ProjectTableProps) {
+export function ProjectTable({projects, onArchive}: ProjectTableProps) {
     if (projects.length === 0) {
         return (
             <section className="rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center">
@@ -60,13 +60,13 @@ export function ProjectTable({ projects, onArchive }: ProjectTableProps) {
                             key={project.id}
                             className="transition hover:bg-slate-50/80"
                         >
-                            <td className="px-5 py-4 align-top">
+                            <td className="px-5 py-4 align-middle">
                                 <span className="rounded-lg bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-700">
                                     {project.code}
                                 </span>
                             </td>
 
-                            <td className="px-5 py-4 align-top">
+                            <td className="px-5 py-4 align-middle">
                                 <div>
                                     <p className="font-semibold text-slate-950">
                                         {project.name}
@@ -74,36 +74,33 @@ export function ProjectTable({ projects, onArchive }: ProjectTableProps) {
                                 </div>
                             </td>
 
-                            <td className="px-5 py-4 align-top">
+                            <td className="px-5 py-4 align-middle">
                                 <DateRange
                                     startDate={project.startDate}
                                     endDate={project.plannedEndDate ?? ""}
                                 />
                             </td>
 
-                            <td className="px-5 py-4 align-top">
-                                <ProjectStatusBadge status={project.status} />
+                            <td className="px-5 py-4 align-middle">
+                                <ProjectStatusBadge status={project.status}/>
                             </td>
 
-                            <td className="px-5 py-4 align-top">
-                                <div className="w-40">
-                                    <ProjectProgressBar
-                                        value={project.progressPercent}
-                                        showLabel
-                                    />
-                                    <div className="mt-2 space-y-1 text-xs text-slate-500">
-                                        <p>
-                                            {project.tasksDone}/{project.tasksTotal} tâches terminées
-                                        </p>
-
-                                        {project.tasksLate > 0 ? (
-                                            <p>{project.tasksLate} en retard</p>
-                                        ) : null}
+                            <td className="px-5 py-4 align-middle">
+                                <div className="flex w-36 items-center gap-3">
+                                    <div className="flex-1">
+                                        <ProjectProgressBar
+                                            value={project.progressPercent}
+                                            showLabel={false}
+                                        />
                                     </div>
+
+                                    <span className="w-9 text-right text-sm font-bold text-slate-950">
+                                        {project.progressPercent}%
+                                    </span>
                                 </div>
                             </td>
 
-                            <td className="px-5 py-4 align-top">
+                            <td className="px-5 py-4 align-middle">
                                 <ProjectActionButtons
                                     projectId={project.id}
                                     onArchive={onArchive}

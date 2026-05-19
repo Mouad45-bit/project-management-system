@@ -20,7 +20,7 @@ export function ProjectStatusBadge
     return (
         <span
             className={cn(
-                "inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold",
+                "inline-flex shrink-0 whitespace-nowrap items-center rounded-full border px-2.5 py-1 text-xs font-semibold",
                 getProjectStatusClassName(status),
                 className,
             )}

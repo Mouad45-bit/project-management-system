@@ -36,7 +36,7 @@ export function ProjectActionButtons
             <button
                 type="button"
                 onClick={() => onArchive(projectId)}
-                className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 transition hover:border-amber-200 hover:bg-amber-50 hover:text-amber-700"
+                className="inline-flex cursor-pointer h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 transition hover:border-amber-200 hover:bg-amber-50 hover:text-amber-700"
                 title="Archiver"
             >
                 <Archive size={16} />

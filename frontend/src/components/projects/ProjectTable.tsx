@@ -61,9 +61,9 @@ export function ProjectTable({ projects, onArchive }: ProjectTableProps) {
                             className="transition hover:bg-slate-50/80"
                         >
                             <td className="px-5 py-4 align-top">
-                  <span className="rounded-lg bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-700">
-                    {project.code}
-                  </span>
+                                <span className="rounded-lg bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-700">
+                                    {project.code}
+                                </span>
                             </td>
 
                             <td className="px-5 py-4 align-top">
@@ -71,11 +71,6 @@ export function ProjectTable({ projects, onArchive }: ProjectTableProps) {
                                     <p className="font-semibold text-slate-950">
                                         {project.name}
                                     </p>
-                                    {project.shortDescription ? (
-                                        <p className="mt-1 line-clamp-2 max-w-md text-sm leading-6 text-slate-500">
-                                            {project.shortDescription}
-                                        </p>
-                                    ) : null}
                                 </div>
                             </td>
 
@@ -96,12 +91,15 @@ export function ProjectTable({ projects, onArchive }: ProjectTableProps) {
                                         value={project.progressPercent}
                                         showLabel
                                     />
-                                    <p className="mt-2 text-xs text-slate-500">
-                                        {project.tasksDone}/{project.tasksTotal} tâches terminées
-                                        {project.tasksLate > 0
-                                            ? ` · ${project.tasksLate} en retard`
-                                            : ""}
-                                    </p>
+                                    <div className="mt-2 space-y-1 text-xs text-slate-500">
+                                        <p>
+                                            {project.tasksDone}/{project.tasksTotal} tâches terminées
+                                        </p>
+
+                                        {project.tasksLate > 0 ? (
+                                            <p>{project.tasksLate} en retard</p>
+                                        ) : null}
+                                    </div>
                                 </div>
                             </td>
 

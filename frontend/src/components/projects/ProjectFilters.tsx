@@ -32,7 +32,7 @@ export function ProjectFilters
                 <div className="grid flex-1 gap-3 md:grid-cols-[1fr_220px]">
                     <div className="relative">
                         <Search
-                            size={18}
+                            size={16}
                             className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
                         />
                         <Input
@@ -48,7 +48,8 @@ export function ProjectFilters
                         onChange={(event) =>
                             onStatusChange(event.target.value as ProjectStatusFilter)
                         }
-                        className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 outline-none transition focus:border-slate-400 focus:ring-4 focus:ring-slate-100"
+                        style={{ fontSize: "12px" }}
+                        className="h-10 rounded-xl border border-slate-200 bg-white px-3 font-medium text-slate-700 outline-none transition focus:border-slate-400 focus:ring-4 focus:ring-slate-100"
                     >
                         <option value="ALL">Tous les statuts</option>
                         {PROJECT_STATUS_OPTIONS.map((option) => (
@@ -60,10 +61,6 @@ export function ProjectFilters
                 </div>
 
                 <div className="flex flex-wrap items-center gap-3">
-                    <div className="rounded-xl bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-600">
-                        {totalElements} projet{totalElements > 1 ? "s" : ""}
-                    </div>
-
                     <Link
                         href="/projects/archives"
                         className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
@@ -74,10 +71,10 @@ export function ProjectFilters
 
                     <Link
                         href="/projects/create"
-                        className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 text-sm font-semibold text-white transition hover:bg-slate-700"
+                        className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 text-sm font-semibold text-white transition hover:bg-slate-800"
                     >
-                        <Plus size={17} />
-                        Nouveau projet
+                        <Plus size={17} className="text-white" />
+                        <span className="text-white">Nouveau projet</span>
                     </Link>
                 </div>
             </div>

@@ -69,7 +69,7 @@ export function ConfirmActionModal
                     <button
                         type="button"
                         onClick={onClose}
-                        className="inline-flex h-9 w-9 items-center justify-center rounded-xl text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+                        className="inline-flex cursor-pointer h-9 w-9 items-center justify-center rounded-xl text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
                         aria-label="Fermer"
                     >
                         <X size={18} />
@@ -88,7 +88,7 @@ export function ConfirmActionModal
                     <button
                         type="button"
                         onClick={onClose}
-                        className="inline-flex h-10 items-center justify-center rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                        className="inline-flex cursor-pointer h-10 items-center justify-center rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
                     >
                         {cancelLabel}
                     </button>
@@ -97,7 +97,7 @@ export function ConfirmActionModal
                         type="button"
                         onClick={onConfirm}
                         className={cn(
-                            "inline-flex h-10 items-center justify-center gap-2 rounded-xl px-4 text-sm font-semibold transition",
+                            "inline-flex cursor-pointer h-10 items-center justify-center gap-2 rounded-xl px-4 text-sm font-semibold transition",
                             toneClasses[tone].confirmButton,
                         )}
                     >

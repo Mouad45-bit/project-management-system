@@ -49,14 +49,6 @@ export function ArchivedProjectsView() {
     }, [loadArchivedProjects]);
 
     async function handleRestore(projectId: number) {
-        const confirmed = window.confirm(
-            "Voulez-vous vraiment restaurer ce projet ?",
-        );
-
-        if (!confirmed) {
-            return;
-        }
-
         await restoreProject(projectId);
         await loadArchivedProjects();
     }

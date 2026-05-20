@@ -1,36 +1,38 @@
 // src/app/projects/[id]/update/page.tsx
 
-import { PageHeader } from "@/components/ui/PageHeader";
+import { ProjectEditView } from "@/components/projects/ProjectEditView";
 
 type UpdateProjectPageProps = {
     params: Promise<{
         id: string;
+    }>;
+    searchParams: Promise<{
+        returnTo?: string;
     }>;
 };
 
 export default async function UpdateProjectPage
 ({
      params,
+     searchParams,
 }: UpdateProjectPageProps) {
     const { id } = await params;
+    const { returnTo } = await searchParams;
 
-    return (
-        <>
-            <PageHeader
-                eyebrow={`Projet #${id}`}
-                title="Modifier le projet"
-                description="Cette page contiendra le formulaire de modification avec le code projet en lecture seule."
-            />
+    const defaultBackHref = `/projects/${id}?returnTo=${encodeURIComponent("/projects")}`;
+    const backHref = sanitizeReturnTo(returnTo, defaultBackHref);
 
-            <section className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center">
-                <h2 className="text-lg font-semibold text-slate-950">
-                    Formulaire de modification
-                </h2>
-                <p className="mt-2 text-sm text-slate-600">
-                    Le formulaire prérempli sera développé dans la phase modification
-                    projet.
-                </p>
-            </section>
-        </>
-    );
+    return <ProjectEditView projectId={Number(id)} backHref={backHref} />;
+}
+
+function sanitizeReturnTo(value: string | undefined, fallback: string): string {
+    if (!value) {
+        return fallback;
+    }
+
+    if (!value.startsWith("/") || value.startsWith("//")) {
+        return fallback;
+    }
+
+    return value;
 }

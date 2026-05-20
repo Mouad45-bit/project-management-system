@@ -169,12 +169,12 @@ export async function updateProject(
     projects[projectIndex] = {
         ...projects[projectIndex],
         name: payload.name,
-        description: payload.description ?? projects[projectIndex].description,
+        description: payload.description,
         startDate: payload.startDate,
-        plannedEndDate: payload.plannedEndDate ?? projects[projectIndex].plannedEndDate,
+        plannedEndDate: payload.plannedEndDate,
         status: payload.status,
         members: selectedMembers,
-        membersCount: payload.memberIds?.length ?? projects[projectIndex].membersCount,
+        membersCount: payload.memberIds?.length ?? 0,
     };
 
     return clone(projects[projectIndex]);

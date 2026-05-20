@@ -18,7 +18,7 @@ export function ProjectActionButtons
     return (
         <div className="flex items-center justify-end gap-2">
             <Link
-                href={`/projects/${projectId}`}
+                href={`/projects/${projectId}?returnTo=${encodeURIComponent("/projects")}`}
                 className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50 hover:text-slate-950"
                 title="Voir le détail"
             >
@@ -26,7 +26,7 @@ export function ProjectActionButtons
             </Link>
 
             <Link
-                href={`/projects/${projectId}/update`}
+                href={`/projects/${projectId}/update?returnTo=${encodeURIComponent("/projects")}`}
                 className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50 hover:text-slate-950"
                 title="Modifier"
             >

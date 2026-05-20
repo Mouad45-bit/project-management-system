@@ -22,9 +22,10 @@ import type { ProjectDetailResponse } from "@/types/project";
 
 type ProjectDetailViewProps = {
     projectId: number;
+    backHref: string;
 };
 
-export function ProjectDetailView({ projectId }: ProjectDetailViewProps) {
+export function ProjectDetailView({ projectId, backHref }: ProjectDetailViewProps) {
     const [project, setProject] = useState<ProjectDetailResponse | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -65,15 +66,9 @@ export function ProjectDetailView({ projectId }: ProjectDetailViewProps) {
                     eyebrow="Projet introuvable"
                     title="Aucun projet trouvé"
                     description="Le projet demandé n’existe pas dans les données actuelles."
-                    actions={
-                        <Link
-                            href="/projects"
-                            className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
-                        >
-                            <ArrowLeft size={17} />
-                            Retour aux projets
-                        </Link>
-                    }
+                    showBackButton
+                    backHref="/projects"
+                    backLabel="Retour aux projets"
                 />
 
                 <section className="rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center">
@@ -91,24 +86,19 @@ export function ProjectDetailView({ projectId }: ProjectDetailViewProps) {
                 eyebrow={project.code}
                 title={project.name}
                 description="Tableau de bord du projet : informations générales, avancement, tâches, équipe et accès vers les modules associés."
+                showBackButton
+                backHref={backHref}
+                backLabel="Retour"
                 actions={
-                    <div className="flex flex-wrap items-center gap-3">
-                        <Link
-                            href="/projects"
-                            className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
-                        >
-                            <ArrowLeft size={17} />
-                            Retour
-                        </Link>
-
-                        <Link
-                            href={`/projects/${project.id}/update`}
-                            className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 text-sm font-semibold text-white transition hover:bg-slate-800"
-                        >
-                            <Pencil size={17} className="text-white" />
-                            <span className="text-white">Modifier</span>
-                        </Link>
-                    </div>
+                    <Link
+                        href={`/projects/${project.id}/update?returnTo=${encodeURIComponent(
+                            `/projects/${project.id}?returnTo=${encodeURIComponent(backHref)}`,
+                        )}`}
+                        className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 text-sm font-semibold text-white transition hover:bg-slate-800"
+                    >
+                        <Pencil size={17} className="text-white" />
+                        <span className="text-white">Modifier</span>
+                    </Link>
                 }
             />
 

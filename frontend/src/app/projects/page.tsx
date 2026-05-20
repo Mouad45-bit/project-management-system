@@ -13,6 +13,8 @@ import {
 } from "@/services/projectApi";
 import type { PageResponse } from "@/types/api";
 import type { ProjectListItemResponse } from "@/types/project";
+import Link from "next/link";
+import {Archive, Plus} from "lucide-react";
 
 export default function ProjectsPage() {
     const [search, setSearch] = useState("");
@@ -47,14 +49,6 @@ export default function ProjectsPage() {
     }, [loadProjects]);
 
     async function handleArchive(projectId: number) {
-        const confirmed = window.confirm(
-            "Voulez-vous vraiment archiver ce projet ?",
-        );
-
-        if (!confirmed) {
-            return;
-        }
-
         await archiveProject(projectId);
         await loadProjects();
     }
@@ -62,10 +56,27 @@ export default function ProjectsPage() {
     return (
         <>
             <PageHeader
-                eyebrow="Module Gestion des projets"
                 title="Gestion des projets"
-                description="Créez, suivez et pilotez vos projets."
+                description="Créez, suivez et pilotez vos projets. Cette interface affiche les projets actifs avec recherche, filtrage, avancement et actions principales."
             />
+
+            <div className="-mt-8 mb-3 flex flex-wrap items-center justify-end gap-3">
+                <Link
+                    href="/projects/archives"
+                    className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                >
+                    <Archive size={17} />
+                    Archives
+                </Link>
+
+                <Link
+                    href="/projects/create"
+                    className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 text-sm font-semibold text-white transition hover:bg-slate-800"
+                >
+                    <Plus size={17} className="text-white" />
+                    <span className="text-white">Nouveau projet</span>
+                </Link>
+            </div>
 
             <ProjectFilters
                 search={search}

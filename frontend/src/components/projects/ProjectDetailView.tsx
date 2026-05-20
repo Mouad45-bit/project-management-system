@@ -5,19 +5,25 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
-    ArrowLeft,
+    Archive,
     CalendarDays,
     Hash,
     Pencil,
+    RotateCcw,
     UsersRound,
 } from "lucide-react";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { DateRange } from "@/components/ui/DateRange";
+import { ConfirmActionModal } from "@/components/ui/ConfirmActionModal";
 import { ProjectStatusBadge } from "@/components/projects/ProjectStatusBadge";
 import { ProjectSummaryCards } from "@/components/projects/ProjectSummaryCards";
 import { ProjectTaskOverview } from "@/components/projects/ProjectTaskOverview";
 import { ProjectTeamPanel } from "@/components/projects/ProjectTeamPanel";
-import { getProjectById } from "@/services/projectApi";
+import {
+    archiveProject,
+    getProjectById,
+    restoreProject,
+} from "@/services/projectApi";
 import type { ProjectDetailResponse } from "@/types/project";
 
 type ProjectDetailViewProps = {
@@ -28,6 +34,8 @@ type ProjectDetailViewProps = {
 export function ProjectDetailView({ projectId, backHref }: ProjectDetailViewProps) {
     const [project, setProject] = useState<ProjectDetailResponse | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false);
+    const [isRestoreModalOpen, setIsRestoreModalOpen] = useState(false);
 
     useEffect(() => {
         let isActive = true;
@@ -48,6 +56,36 @@ export function ProjectDetailView({ projectId, backHref }: ProjectDetailViewProp
             isActive = false;
         };
     }, [projectId]);
+
+    async function handleConfirmArchive() {
+        if (!project) {
+            return;
+        }
+
+        await archiveProject(project.id);
+
+        setProject({
+            ...project,
+            archived: true,
+        });
+
+        setIsArchiveModalOpen(false);
+    }
+
+    async function handleConfirmRestore() {
+        if (!project) {
+            return;
+        }
+
+        await restoreProject(project.id);
+
+        setProject({
+            ...project,
+            archived: false,
+        });
+
+        setIsRestoreModalOpen(false);
+    }
 
     if (isLoading) {
         return (
@@ -90,15 +128,39 @@ export function ProjectDetailView({ projectId, backHref }: ProjectDetailViewProp
                 backHref={backHref}
                 backLabel="Retour"
                 actions={
-                    <Link
-                        href={`/projects/${project.id}/update?returnTo=${encodeURIComponent(
-                            `/projects/${project.id}?returnTo=${encodeURIComponent(backHref)}`,
-                        )}`}
-                        className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 text-sm font-semibold text-white transition hover:bg-slate-800"
-                    >
-                        <Pencil size={17} className="text-white" />
-                        <span className="text-white">Modifier</span>
-                    </Link>
+                    <div className="flex flex-wrap items-center justify-end gap-3">
+                        {!project.archived ? (
+                            <Link
+                                href={`/projects/${project.id}/update?returnTo=${encodeURIComponent(
+                                    `/projects/${project.id}?returnTo=${encodeURIComponent(backHref)}`,
+                                )}`}
+                                className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 text-sm font-semibold text-white transition hover:bg-slate-800"
+                            >
+                                <Pencil size={17} className="text-white" />
+                                <span className="text-white">Modifier</span>
+                            </Link>
+                        ) : null}
+
+                        {!project.archived ? (
+                            <button
+                                type="button"
+                                onClick={() => setIsArchiveModalOpen(true)}
+                                className="inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-xl bg-amber-600 px-4 text-sm font-semibold text-white transition hover:bg-amber-700"
+                            >
+                                <Archive size={17} className="text-white" />
+                                <span className="text-white">Archiver</span>
+                            </button>
+                        ) : (
+                            <button
+                                type="button"
+                                onClick={() => setIsRestoreModalOpen(true)}
+                                className="inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 text-sm font-semibold text-white transition hover:bg-emerald-700"
+                            >
+                                <RotateCcw size={17} className="text-white" />
+                                <span className="text-white">Restaurer</span>
+                            </button>
+                        )}
+                    </div>
                 }
             />
 
@@ -162,6 +224,28 @@ export function ProjectDetailView({ projectId, backHref }: ProjectDetailViewProp
                     className="h-[640px]"
                 />
             </div>
+
+            <ConfirmActionModal
+                open={isArchiveModalOpen}
+                title="Archiver ce projet ?"
+                message="Ce projet sera retiré de la liste des projets actifs. Vous pourrez le retrouver et le restaurer depuis la page des projets archivés."
+                confirmLabel="Archiver"
+                icon={Archive}
+                tone="warning"
+                onConfirm={handleConfirmArchive}
+                onClose={() => setIsArchiveModalOpen(false)}
+            />
+
+            <ConfirmActionModal
+                open={isRestoreModalOpen}
+                title="Restaurer ce projet ?"
+                message="Ce projet sera replacé dans la liste des projets actifs. Son statut métier sera conservé."
+                confirmLabel="Restaurer"
+                icon={RotateCcw}
+                tone="success"
+                onConfirm={handleConfirmRestore}
+                onClose={() => setIsRestoreModalOpen(false)}
+            />
         </>
     );
 }
@@ -171,7 +255,7 @@ function InfoItem
      icon,
      label,
      value,
-}: {
+ }: {
     icon: React.ReactNode;
     label: string;
     value: React.ReactNode;

@@ -2,8 +2,7 @@
 
 "use client";
 
-import Link from "next/link";
-import { Archive, Plus, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import type { ProjectStatus } from "@/types/project";
 import { PROJECT_STATUS_OPTIONS } from "@/lib/statusFormat";
@@ -22,9 +21,10 @@ export function ProjectFilters
 ({
      search,
      status,
+     totalElements,
      onSearchChange,
      onStatusChange,
-}: ProjectFiltersProps) {
+ }: ProjectFiltersProps) {
     return (
         <section className="mb-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
             <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
@@ -34,6 +34,7 @@ export function ProjectFilters
                             size={16}
                             className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
                         />
+
                         <Input
                             value={search}
                             onChange={(event) => onSearchChange(event.target.value)}
@@ -51,6 +52,7 @@ export function ProjectFilters
                         className="h-10 rounded-xl border border-slate-200 bg-white px-3 font-medium text-slate-700 outline-none transition focus:border-slate-400 focus:ring-4 focus:ring-slate-100"
                     >
                         <option value="ALL">Tous les statuts</option>
+
                         {PROJECT_STATUS_OPTIONS.map((option) => (
                             <option key={option.value} value={option.value}>
                                 {option.label}
@@ -60,21 +62,10 @@ export function ProjectFilters
                 </div>
 
                 <div className="flex flex-wrap items-center gap-3">
-                    <Link
-                        href="/projects/archives"
-                        className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
-                    >
-                        <Archive size={17} />
-                        Archives
-                    </Link>
-
-                    <Link
-                        href="/projects/create"
-                        className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 text-sm font-semibold text-white transition hover:bg-slate-800"
-                    >
-                        <Plus size={17} className="text-white" />
-                        <span className="text-white">Nouveau projet</span>
-                    </Link>
+                    <div className="rounded-xl bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-600">
+                        {totalElements} projet{totalElements > 1 ? "s" : ""} actif
+                        {totalElements > 1 ? "s" : ""}
+                    </div>
                 </div>
             </div>
         </section>

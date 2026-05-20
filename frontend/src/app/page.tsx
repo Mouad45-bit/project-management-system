@@ -35,20 +35,20 @@ export default function HomePage() {
                 href="/projects"
                 className="group rounded-2xl border border-slate-200 bg-slate-900 p-5 text-white transition hover:bg-slate-700"
             >
-              <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-white/10">
+              <div className="mb-4 text-white flex h-11 w-11 items-center justify-center rounded-xl bg-white/10">
                 <LayoutDashboard size={22} />
               </div>
 
-              <h2 className="mb-2 font-semibold">Accéder au module</h2>
+              <h2 className="mb-2 text-white font-semibold">Accéder au module</h2>
               <p className="mb-4 text-sm leading-6 text-slate-200">
                 Ouvrir l’espace de gestion des projets avec navigation latérale.
               </p>
 
-              <span className="inline-flex items-center gap-2 text-sm font-semibold">
+              <span className="inline-flex text-white items-center gap-2 text-sm font-semibold">
               Continuer
               <ArrowRight
                   size={17}
-                  className="transition group-hover:translate-x-1"
+                  className="transition text-white group-hover:translate-x-1"
               />
             </span>
             </Link>

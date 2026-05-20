@@ -5,6 +5,7 @@ import type {
     ProjectListItemResponse,
     ProjectMemberResponse,
     ProjectSummaryResponse,
+    ProjectTaskOverviewItem,
 } from "@/types/project";
 import type { PageResponse } from "@/types/api";
 
@@ -48,6 +49,79 @@ export const mockProjectSummary: ProjectSummaryResponse = {
     lateCount: 3,
 };
 
+const projectOneTasks: ProjectTaskOverviewItem[] = [
+    {
+        id: 1,
+        title: "Finaliser la structure du module projets",
+        status: "COMPLETED",
+        assigneeName: "Mouad Fekkak",
+        dueDate: "2026-01-30",
+        late: false,
+    },
+    {
+        id: 2,
+        title: "Créer l’interface de liste des projets",
+        status: "COMPLETED",
+        assigneeName: "Marwane Drissi",
+        dueDate: "2026-02-10",
+        late: false,
+    },
+    {
+        id: 3,
+        title: "Développer le formulaire de création",
+        status: "IN_PROGRESS",
+        assigneeName: "Marwane Drissi",
+        dueDate: "2026-02-18",
+        late: false,
+    },
+    {
+        id: 4,
+        title: "Préparer les endpoints REST du module",
+        status: "TODO",
+        assigneeName: "Yassine Amrani",
+        dueDate: "2026-02-22",
+        late: true,
+    },
+];
+
+const projectTwoTasks: ProjectTaskOverviewItem[] = [
+    {
+        id: 5,
+        title: "Analyser les besoins du tableau de bord",
+        status: "IN_PROGRESS",
+        assigneeName: "Mouad Fekkak",
+        dueDate: "2026-02-15",
+        late: false,
+    },
+    {
+        id: 6,
+        title: "Préparer les cartes d’indicateurs",
+        status: "TODO",
+        assigneeName: "Marwane Drissi",
+        dueDate: "2026-02-25",
+        late: false,
+    },
+];
+
+const projectThreeTasks: ProjectTaskOverviewItem[] = [
+    {
+        id: 7,
+        title: "Créer la maquette Kanban",
+        status: "COMPLETED",
+        assigneeName: "Marwane Drissi",
+        dueDate: "2025-11-18",
+        late: false,
+    },
+    {
+        id: 8,
+        title: "Valider le prototype",
+        status: "COMPLETED",
+        assigneeName: "Mouad Fekkak",
+        dueDate: "2025-12-20",
+        late: false,
+    },
+];
+
 export const mockProjectDetails: ProjectDetailResponse[] = [
     {
         id: 1,
@@ -63,7 +137,7 @@ export const mockProjectDetails: ProjectDetailResponse[] = [
         membersCount: 3,
         summary: mockProjectSummary,
         members: mockProjectMembers,
-        taskOverview: [],
+        taskOverview: projectOneTasks,
     },
     {
         id: 2,
@@ -87,7 +161,7 @@ export const mockProjectDetails: ProjectDetailResponse[] = [
             lateCount: 0,
         },
         members: mockProjectMembers.slice(0, 2),
-        taskOverview: [],
+        taskOverview: projectTwoTasks,
     },
     {
         id: 3,
@@ -111,7 +185,7 @@ export const mockProjectDetails: ProjectDetailResponse[] = [
             lateCount: 0,
         },
         members: mockProjectMembers.slice(1, 3),
-        taskOverview: [],
+        taskOverview: projectThreeTasks,
     },
 ];
 

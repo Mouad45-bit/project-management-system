@@ -1,19 +1,25 @@
 // src/components/projects/ProjectProgressBar.tsx
 
+import { cn } from "@/lib/classNames";
+
 type ProjectProgressBarProps = {
     value: number;
     showLabel?: boolean;
+    className?: string;
+    barClassName?: string;
 };
 
 export function ProjectProgressBar
 ({
      value,
      showLabel = true,
-}: ProjectProgressBarProps) {
+     className,
+     barClassName,
+ }: ProjectProgressBarProps) {
     const safeValue = Math.min(100, Math.max(0, value));
 
     return (
-        <div className="w-full">
+        <div className={cn("w-full", className)}>
             {showLabel ? (
                 <div className="mb-2 flex items-center justify-between text-xs">
                     <span className="font-medium text-slate-500">Avancement</span>
@@ -21,7 +27,12 @@ export function ProjectProgressBar
                 </div>
             ) : null}
 
-            <div className="h-2 w-full overflow-hidden rounded-full bg-slate-100">
+            <div
+                className={cn(
+                    "h-2 w-full overflow-hidden rounded-full bg-slate-100",
+                    barClassName,
+                )}
+            >
                 <div
                     className="h-full rounded-full bg-slate-900 transition-all"
                     style={{ width: `${safeValue}%` }}

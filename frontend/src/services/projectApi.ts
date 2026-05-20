@@ -1,10 +1,6 @@
 // src/services/projectApi.ts
 
-import {
-    mockProjectDetails,
-    mockProjectListItems,
-} from "@/mocks/projectMocks";
-import type { PageResponse } from "@/types/api";
+import type { PageResponse, ApiErrorResponse } from "@/types/api";
 import type {
     ProjectCreateRequest,
     ProjectDetailResponse,
@@ -12,8 +8,11 @@ import type {
     ProjectStatus,
     ProjectSummaryResponse,
     ProjectUpdateRequest,
+    ProjectMemberResponse,
 } from "@/types/project";
-import { mockAvailableUsers } from "@/mocks/userMocks";
+
+const API_BASE_URL =
+    process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080";
 
 type GetProjectsParams = {
     search?: string;
@@ -21,185 +20,159 @@ type GetProjectsParams = {
     archived?: boolean;
     page?: number;
     size?: number;
+    sort?: string;
 };
 
-let projects = [...mockProjectDetails];
-
-function clone<T>(value: T): T {
-    return JSON.parse(JSON.stringify(value)) as T;
+async function parseApiError(response: Response): Promise<string> {
+    try {
+        const errorBody = (await response.json()) as ApiErrorResponse;
+        return errorBody.message || "Une erreur API est survenue.";
+    } catch {
+        return "Une erreur API est survenue.";
+    }
 }
 
-function toListItem(project: ProjectDetailResponse): ProjectListItemResponse {
-    return {
-        id: project.id,
-        code: project.code,
-        name: project.name,
-        shortDescription: project.description,
-        startDate: project.startDate,
-        plannedEndDate: project.plannedEndDate,
-        status: project.status,
-        archived: project.archived,
-        progressPercent: project.progressPercent,
-        tasksTotal:
-            project.summary.todoCount +
-            project.summary.inProgressCount +
-            project.summary.toValidateCount +
-            project.summary.completedCount +
-            project.summary.blockedCount,
-        tasksDone: project.summary.completedCount,
-        tasksLate: project.summary.lateCount,
-    };
+async function requestJson<T>(
+    path: string,
+    options?: RequestInit,
+): Promise<T> {
+    const response = await fetch(`${API_BASE_URL}${path}`, {
+        ...options,
+        headers: {
+            "Content-Type": "application/json",
+            ...options?.headers,
+        },
+    });
+
+    if (!response.ok) {
+        throw new Error(await parseApiError(response));
+    }
+
+    return response.json() as Promise<T>;
 }
 
-export async function getProjects
-({
-     search = "",
-     status = "ALL",
-     archived = false,
-     page = 0,
-     size = 10,
-}: GetProjectsParams = {}): Promise<PageResponse<ProjectListItemResponse>> {
-    const normalizedSearch = search.trim().toLowerCase();
+async function requestVoid(
+    path: string,
+    options?: RequestInit,
+): Promise<void> {
+    const response = await fetch(`${API_BASE_URL}${path}`, {
+        ...options,
+        headers: {
+            "Content-Type": "application/json",
+            ...options?.headers,
+        },
+    });
 
-    const filteredProjects = projects
-        .map(toListItem)
-        .filter((project) => project.archived === archived)
-        .filter((project) => {
-            if (!normalizedSearch) {
-                return true;
-            }
+    if (!response.ok) {
+        throw new Error(await parseApiError(response));
+    }
+}
 
-            return (
-                project.name.toLowerCase().includes(normalizedSearch) ||
-                project.code.toLowerCase().includes(normalizedSearch)
-            );
-        })
-        .filter((project) => {
-            if (status === "ALL") {
-                return true;
-            }
+function buildQueryString(
+    params: Record<string, string | number | boolean | undefined>,
+) {
+    const searchParams = new URLSearchParams();
 
-            return project.status === status;
-        });
+    Object.entries(params).forEach(([key, value]) => {
+        if (value === undefined || value === "") {
+            return;
+        }
 
-    const start = page * size;
-    const end = start + size;
-    const content = filteredProjects.slice(start, end);
+        searchParams.set(key, String(value));
+    });
 
-    return {
-        content: clone(content),
+    return searchParams.toString();
+}
+
+export async function getProjects({
+                                      search = "",
+                                      status = "ALL",
+                                      archived = false,
+                                      page = 0,
+                                      size = 10,
+                                      sort = "createdAt,desc",
+                                  }: GetProjectsParams = {}): Promise<PageResponse<ProjectListItemResponse>> {
+    const query = buildQueryString({
+        search,
+        status: status === "ALL" ? undefined : status,
+        archived,
         page,
         size,
-        totalElements: filteredProjects.length,
-        totalPages: Math.max(1, Math.ceil(filteredProjects.length / size)),
-        first: page === 0,
-        last: end >= filteredProjects.length,
-    };
+        sort,
+    });
+
+    return requestJson<PageResponse<ProjectListItemResponse>>(
+        `/api/projects?${query}`,
+    );
 }
 
 export async function getProjectById(
     id: number,
 ): Promise<ProjectDetailResponse | null> {
-    const project = projects.find((item) => item.id === id);
-
-    return project ? clone(project) : null;
+    try {
+        return await requestJson<ProjectDetailResponse>(`/api/projects/${id}`);
+    } catch {
+        return null;
+    }
 }
 
 export async function getProjectSummary(
     id: number,
 ): Promise<ProjectSummaryResponse | null> {
-    const project = projects.find((item) => item.id === id);
-
-    return project ? clone(project.summary) : null;
+    try {
+        return await requestJson<ProjectSummaryResponse>(
+            `/api/projects/${id}/summary`,
+        );
+    } catch {
+        return null;
+    }
 }
 
 export async function createProject(
     payload: ProjectCreateRequest,
 ): Promise<ProjectDetailResponse> {
-    const nextId = Math.max(...projects.map((project) => project.id)) + 1;
-    const nextCode = `PRJ-${String(nextId).padStart(3, "0")}`;
-
-    const selectedMembers = mockAvailableUsers.filter((user) =>
-        payload.memberIds?.includes(user.id),
-    );
-
-    const createdProject: ProjectDetailResponse = {
-        id: nextId,
-        code: nextCode,
-        name: payload.name,
-        description: payload.description,
-        startDate: payload.startDate,
-        plannedEndDate: payload.plannedEndDate,
-        status: payload.status,
-        archived: false,
-        progressPercent: 0,
-        membersCount: payload.memberIds?.length ?? 0,
-        summary: {
-            progressPercent: 0,
-            todoCount: 0,
-            inProgressCount: 0,
-            toValidateCount: 0,
-            completedCount: 0,
-            blockedCount: 0,
-            lateCount: 0,
-        },
-        members: selectedMembers,
-        taskOverview: [],
-    };
-
-    projects = [createdProject, ...projects];
-
-    return clone(createdProject);
+    return requestJson<ProjectDetailResponse>("/api/projects", {
+        method: "POST",
+        body: JSON.stringify(payload),
+    });
 }
 
 export async function updateProject(
     id: number,
     payload: ProjectUpdateRequest,
 ): Promise<ProjectDetailResponse | null> {
-    const projectIndex = projects.findIndex((project) => project.id === id);
-
-    if (projectIndex === -1) {
+    try {
+        return await requestJson<ProjectDetailResponse>(`/api/projects/${id}`, {
+            method: "PUT",
+            body: JSON.stringify(payload),
+        });
+    } catch {
         return null;
     }
-
-    const selectedMembers = mockAvailableUsers.filter((user) =>
-        payload.memberIds?.includes(user.id),
-    );
-
-    projects[projectIndex] = {
-        ...projects[projectIndex],
-        name: payload.name,
-        description: payload.description,
-        startDate: payload.startDate,
-        plannedEndDate: payload.plannedEndDate,
-        status: payload.status,
-        members: selectedMembers,
-        membersCount: payload.memberIds?.length ?? 0,
-    };
-
-    return clone(projects[projectIndex]);
 }
 
 export async function archiveProject(id: number): Promise<boolean> {
-    const project = projects.find((item) => item.id === id);
+    await requestVoid(`/api/projects/${id}/archive`, {
+        method: "PATCH",
+    });
 
-    if (!project) {
-        return false;
-    }
-
-    project.archived = true;
     return true;
 }
 
 export async function restoreProject(id: number): Promise<boolean> {
-    const project = projects.find((item) => item.id === id);
+    await requestVoid(`/api/projects/${id}/restore`, {
+        method: "PATCH",
+    });
 
-    if (!project) {
-        return false;
-    }
-
-    project.archived = false;
     return true;
 }
 
-export const initialMockProjects = mockProjectListItems;
+export async function updateProjectMembers(
+    id: number,
+    memberIds: number[],
+): Promise<ProjectMemberResponse[]> {
+    return requestJson<ProjectMemberResponse[]>(`/api/projects/${id}/members`, {
+        method: "PUT",
+        body: JSON.stringify({ memberIds }),
+    });
+}

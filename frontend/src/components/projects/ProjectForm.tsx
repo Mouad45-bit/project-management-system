@@ -285,14 +285,3 @@ function FieldError({message}: { message?: string }) {
 
     return <p className="mt-2 text-sm font-medium text-red-600">{message}</p>;
 }
-
-function SummaryRow({label, value}: { label: string; value: string }) {
-    return (
-        <div className="flex items-center justify-between gap-4 text-sm">
-            <span className="text-slate-500">{label}</span>
-            <span className="max-w-[220px] truncate font-semibold text-slate-950">
-        {value}
-      </span>
-        </div>
-    );
-}

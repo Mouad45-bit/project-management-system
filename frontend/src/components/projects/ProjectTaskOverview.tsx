@@ -1,12 +1,22 @@
 // src/components/projects/ProjectTaskOverview.tsx
 
-import { AlertTriangle, CheckCircle2, CircleDashed, Clock3, PauseCircle } from "lucide-react";
+import {
+    AlertTriangle,
+    CheckCircle2,
+    CircleDashed,
+    Clock3,
+    PauseCircle,
+} from "lucide-react";
 import { DateRange } from "@/components/ui/DateRange";
 import { cn } from "@/lib/classNames";
-import type { ProjectTaskOverviewItem, ProjectTaskStatus } from "@/types/project";
+import type {
+    ProjectTaskOverviewItem,
+    ProjectTaskStatus,
+} from "@/types/project";
 
 type ProjectTaskOverviewProps = {
     tasks: ProjectTaskOverviewItem[];
+    className?: string;
 };
 
 const taskStatusLabels: Record<ProjectTaskStatus, string> = {
@@ -33,10 +43,19 @@ const taskStatusIcons: Record<ProjectTaskStatus, typeof CircleDashed> = {
     BLOCKED: PauseCircle,
 };
 
-export function ProjectTaskOverview({ tasks }: ProjectTaskOverviewProps) {
+export function ProjectTaskOverview
+({
+     tasks,
+     className,
+}: ProjectTaskOverviewProps) {
     return (
-        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <div className="mb-5 flex items-start justify-between gap-4">
+        <section
+            className={cn(
+                "flex min-h-0 flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm",
+                className,
+            )}
+        >
+            <div className="mb-5 flex shrink-0 items-start justify-between gap-4">
                 <div>
                     <h2 className="text-lg font-bold text-slate-950">
                         Aperçu des tâches
@@ -52,13 +71,13 @@ export function ProjectTaskOverview({ tasks }: ProjectTaskOverviewProps) {
             </div>
 
             {tasks.length === 0 ? (
-                <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center">
+                <div className="flex min-h-0 flex-1 items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center">
                     <p className="text-sm font-medium text-slate-500">
                         Aucune tâche n’est encore rattachée à ce projet.
                     </p>
                 </div>
             ) : (
-                <div className="space-y-3">
+                <div className="min-h-0 flex-1 space-y-3 overflow-y-auto pr-1">
                     {tasks.map((task) => {
                         const Icon = taskStatusIcons[task.status];
 
@@ -93,13 +112,17 @@ export function ProjectTaskOverview({ tasks }: ProjectTaskOverviewProps) {
                                         </h3>
 
                                         <p className="mt-1 text-sm text-slate-500">
-                                            Assignée à : {task.assigneeName ?? "Non affectée"}
+                                            Assignée à :{" "}
+                                            {task.assigneeName ?? "Non affectée"}
                                         </p>
                                     </div>
 
                                     <div className="shrink-0 text-sm text-slate-600">
                                         {task.dueDate ? (
-                                            <DateRange startDate={task.dueDate} endDate={task.dueDate} />
+                                            <DateRange
+                                                startDate={task.dueDate}
+                                                endDate={task.dueDate}
+                                            />
                                         ) : (
                                             <span>Échéance non définie</span>
                                         )}

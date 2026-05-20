@@ -6,12 +6,22 @@ import type { ProjectMemberResponse } from "@/types/project";
 
 type ProjectTeamPanelProps = {
     members: ProjectMemberResponse[];
+    className?: string;
 };
 
-export function ProjectTeamPanel({ members }: ProjectTeamPanelProps) {
+export function ProjectTeamPanel
+({
+     members,
+     className,
+ }: ProjectTeamPanelProps) {
     return (
-        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <div className="mb-5 flex items-start justify-between gap-4">
+        <section
+            className={cn(
+                "flex min-h-0 flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm",
+                className,
+            )}
+        >
+            <div className="mb-5 flex shrink-0 items-start justify-between gap-4">
                 <div>
                     <div className="mb-2 flex items-center gap-2">
                         <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-100 text-slate-700">
@@ -34,13 +44,13 @@ export function ProjectTeamPanel({ members }: ProjectTeamPanelProps) {
             </div>
 
             {members.length === 0 ? (
-                <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center">
+                <div className="flex min-h-0 flex-1 items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center">
                     <p className="text-sm font-medium text-slate-500">
                         Aucun membre n’est encore désigné pour ce projet.
                     </p>
                 </div>
             ) : (
-                <div className="space-y-3">
+                <div className="min-h-0 flex-1 space-y-3 overflow-y-auto pr-1">
                     {members.map((member) => (
                         <article
                             key={member.id}
@@ -87,7 +97,8 @@ export function ProjectTeamPanel({ members }: ProjectTeamPanelProps) {
                                     Charge actuelle
                                 </span>
                                 <span className="font-bold text-slate-950">
-                                    {member.workloadCurrent}/{member.workloadCapacity} tâches
+                                    {member.workloadCurrent}/
+                                    {member.workloadCapacity} tâches
                                 </span>
                             </div>
 
@@ -95,10 +106,15 @@ export function ProjectTeamPanel({ members }: ProjectTeamPanelProps) {
                                 <div
                                     className={cn(
                                         "h-full rounded-full",
-                                        member.overloaded ? "bg-amber-500" : "bg-slate-900",
+                                        member.overloaded
+                                            ? "bg-amber-500"
+                                            : "bg-slate-900",
                                     )}
                                     style={{
-                                        width: `${Math.min(member.workloadPercent, 100)}%`,
+                                        width: `${Math.min(
+                                            member.workloadPercent,
+                                            100,
+                                        )}%`,
                                     }}
                                 />
                             </div>

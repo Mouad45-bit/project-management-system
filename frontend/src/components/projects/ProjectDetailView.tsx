@@ -15,10 +15,8 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { DateRange } from "@/components/ui/DateRange";
 import { ProjectStatusBadge } from "@/components/projects/ProjectStatusBadge";
 import { ProjectSummaryCards } from "@/components/projects/ProjectSummaryCards";
-import { ProjectModuleNavigation } from "@/components/projects/ProjectModuleNavigation";
 import { ProjectTaskOverview } from "@/components/projects/ProjectTaskOverview";
 import { ProjectTeamPanel } from "@/components/projects/ProjectTeamPanel";
-import { ProjectProgressBar } from "@/components/projects/ProjectProgressBar";
 import { getProjectById } from "@/services/projectApi";
 import type { ProjectDetailResponse } from "@/types/project";
 
@@ -107,76 +105,54 @@ export function ProjectDetailView({ projectId }: ProjectDetailViewProps) {
                             href={`/projects/${project.id}/update`}
                             className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 text-sm font-semibold text-white transition hover:bg-slate-800"
                         >
-                            <Pencil size={17} />
-                            Modifier
+                            <Pencil size={17} className="text-white" />
+                            <span className="text-white">Modifier</span>
                         </Link>
                     </div>
                 }
             />
 
             <section className="mb-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                <div className="grid gap-6 xl:grid-cols-[1fr_320px]">
-                    <div>
-                        <div className="mb-4 flex flex-wrap items-center gap-3">
-                            <ProjectStatusBadge status={project.status} />
+                <div>
+                    <div className="mb-4 flex flex-wrap items-center gap-3">
+                        <ProjectStatusBadge status={project.status} />
 
-                            {project.archived ? (
-                                <span className="rounded-full border border-slate-200 bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600">
-                                    Archivé
-                                </span>
-                            ) : null}
-                        </div>
-
-                        <p className="max-w-3xl text-sm leading-7 text-slate-600">
-                            {project.description ?? "Aucune description renseignée."}
-                        </p>
-
-                        <div className="mt-6 grid gap-4 md:grid-cols-3">
-                            <InfoItem
-                                icon={<Hash size={18} />}
-                                label="Code projet"
-                                value={project.code}
-                            />
-
-                            <InfoItem
-                                icon={<CalendarDays size={18} />}
-                                label="Période"
-                                value={
-                                    <DateRange
-                                        startDate={project.startDate}
-                                        endDate={project.plannedEndDate ?? ""}
-                                    />
-                                }
-                            />
-
-                            <InfoItem
-                                icon={<UsersRound size={18} />}
-                                label="Membres"
-                                value={`${project.membersCount} membre${
-                                    project.membersCount > 1 ? "s" : ""
-                                }`}
-                            />
-                        </div>
+                        {project.archived ? (
+                            <span className="rounded-full border border-slate-200 bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600">
+                                Archivé
+                            </span>
+                        ) : null}
                     </div>
 
-                    <div className="rounded-2xl bg-slate-50 p-5">
-                        <div className="mb-3 flex items-center justify-between">
-                            <span className="text-sm font-semibold text-slate-500">
-                                Progression
-                            </span>
-                            <span className="text-2xl font-bold text-slate-950">
-                                {project.progressPercent}%
-                            </span>
-                        </div>
+                    <p className="w-full text-sm leading-7 text-slate-600">
+                        {project.description ?? "Aucune description renseignée."}
+                    </p>
 
-                        <ProjectProgressBar
-                            value={project.progressPercent}
-                            showLabel={false}
+                    <div className="mt-6 grid gap-4 md:grid-cols-3">
+                        <InfoItem
+                            icon={<Hash size={18} />}
+                            label="Code projet"
+                            value={project.code}
                         />
 
-                        <p className="mt-3 text-sm leading-6 text-slate-500">
-                            Indicateur global de pilotage du projet.
-                        </p>
+                        <InfoItem
+                            icon={<CalendarDays size={18} />}
+                            label="Période"
+                            value={
+                                <DateRange
+                                    startDate={project.startDate}
+                                    endDate={project.plannedEndDate ?? ""}
+                                />
+                            }
+                        />
+
+                        <InfoItem
+                            icon={<UsersRound size={18} />}
+                            label="Membres"
+                            value={`${project.membersCount} membre${
+                                project.membersCount > 1 ? "s" : ""
+                            }`}
+                        />
                     </div>
                 </div>
             </section>
@@ -185,13 +161,16 @@ export function ProjectDetailView({ projectId }: ProjectDetailViewProps) {
                 <ProjectSummaryCards summary={project.summary} />
             </div>
 
-            <div className="grid items-start gap-6 xl:grid-cols-[1fr_380px]">
-                <div className="space-y-6">
-                    <ProjectModuleNavigation />
-                    <ProjectTaskOverview tasks={project.taskOverview} />
-                </div>
+            <div className="grid items-stretch gap-6 xl:grid-cols-[minmax(0,1fr)_420px]">
+                <ProjectTaskOverview
+                    tasks={project.taskOverview}
+                    className="h-[640px]"
+                />
 
-                <ProjectTeamPanel members={project.members} />
+                <ProjectTeamPanel
+                    members={project.members}
+                    className="h-[640px]"
+                />
             </div>
         </>
     );

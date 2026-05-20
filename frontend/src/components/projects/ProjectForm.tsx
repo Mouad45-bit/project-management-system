@@ -211,7 +211,7 @@ export function ProjectForm
                             </div>
 
                             <div className="md:col-span-2">
-                                <Label required>Statut initial</Label>
+                                <Label required>{isEditMode ? "Statut" : "Statut initial"}</Label>
                                 <select
                                     value={status}
                                     onChange={(event) =>
@@ -253,7 +253,7 @@ export function ProjectForm
                     {isSubmitting
                         ? "Enregistrement..."
                         : isEditMode
-                            ? "Sauvegarder"
+                            ? "Sauvegarder les modifications"
                             : "Créer le projet"
                     }
                 </button>

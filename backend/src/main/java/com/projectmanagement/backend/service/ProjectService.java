@@ -30,6 +30,7 @@ public class ProjectService {
     private final ProjectMapper projectMapper;
     private final ProjectMemberService projectMemberService;
     private final ProjectCodeGeneratorService projectCodeGeneratorService;
+    private final ProjectMetricsService projectMetricsService;
 
     @Transactional(readOnly = true)
     public PageResponse<ProjectListItemResponse> getProjects(
@@ -45,7 +46,10 @@ public class ProjectService {
                         archived,
                         pageable
                 )
-                .map(projectMapper::toListItemResponse);
+                .map(project -> projectMapper.toListItemResponse(
+                        project,
+                        projectMetricsService.getProjectSummary(project.getId())
+                ));
 
         return PageResponse.from(projectsPage);
     }
@@ -145,13 +149,13 @@ public class ProjectService {
             throw ProjectNotFoundException.byId(projectId);
         }
 
-        return projectMapper.emptySummary();
+        return projectMetricsService.getProjectSummary(projectId);
     }
 
     private ProjectDetailResponse buildProjectDetailResponse(Long projectId) {
         Project project = findProjectDetailOrThrow(projectId);
 
-        ProjectSummaryResponse summary = projectMapper.emptySummary();
+        ProjectSummaryResponse summary = projectMetricsService.getProjectSummary(projectId);
         List<ProjectMemberResponse> members =
                 projectMemberService.getProjectMembers(projectId);
 
@@ -159,7 +163,7 @@ public class ProjectService {
                 project,
                 summary,
                 members,
-                List.of()
+                projectMetricsService.getTaskOverview(projectId)
         );
     }
 

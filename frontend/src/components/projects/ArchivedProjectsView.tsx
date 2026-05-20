@@ -4,7 +4,10 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { PageHeader } from "@/components/ui/PageHeader";
-import { ArchivedProjectFilters } from "@/components/projects/ArchivedProjectFilters";
+import {
+    ArchivedProjectFilters,
+    type ArchivedProjectStatusFilter,
+} from "@/components/projects/ArchivedProjectFilters";
 import { ArchivedProjectsTable } from "@/components/projects/ArchivedProjectsTable";
 import {
     getProjects,
@@ -15,6 +18,7 @@ import type { ProjectListItemResponse } from "@/types/project";
 
 export function ArchivedProjectsView() {
     const [search, setSearch] = useState("");
+    const [status, setStatus] = useState<ArchivedProjectStatusFilter>("ALL");
     const [projectsPage, setProjectsPage] =
         useState<PageResponse<ProjectListItemResponse> | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -24,7 +28,7 @@ export function ArchivedProjectsView() {
 
         const response = await getProjects({
             search,
-            status: "ALL",
+            status,
             archived: true,
             page: 0,
             size: 10,
@@ -32,7 +36,7 @@ export function ArchivedProjectsView() {
 
         setProjectsPage(response);
         setIsLoading(false);
-    }, [search]);
+    }, [search, status]);
 
     useEffect(() => {
         const timeoutId = window.setTimeout(() => {
@@ -70,8 +74,10 @@ export function ArchivedProjectsView() {
 
             <ArchivedProjectFilters
                 search={search}
+                status={status}
                 totalElements={projectsPage?.totalElements ?? 0}
                 onSearchChange={setSearch}
+                onStatusChange={setStatus}
             />
 
             {isLoading ? (

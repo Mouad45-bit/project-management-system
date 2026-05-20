@@ -30,7 +30,7 @@ export function ArchivedProjectActionButtons
             <button
                 type="button"
                 onClick={() => onRestore(projectId)}
-                className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 transition hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700"
+                className="inline-flex cursor-pointer h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 transition hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700"
                 title="Restaurer"
             >
                 <RotateCcw size={16} />

@@ -13,6 +13,7 @@ import type {
     ProjectSummaryResponse,
     ProjectUpdateRequest,
 } from "@/types/project";
+import { mockAvailableUsers } from "@/mocks/userMocks";
 
 type GetProjectsParams = {
     search?: string;
@@ -118,6 +119,10 @@ export async function createProject(
     const nextId = Math.max(...projects.map((project) => project.id)) + 1;
     const nextCode = `PRJ-${String(nextId).padStart(3, "0")}`;
 
+    const selectedMembers = mockAvailableUsers.filter((user) =>
+        payload.memberIds?.includes(user.id),
+    );
+
     const createdProject: ProjectDetailResponse = {
         id: nextId,
         code: nextCode,
@@ -138,7 +143,7 @@ export async function createProject(
             blockedCount: 0,
             lateCount: 0,
         },
-        members: [],
+        members: selectedMembers,
         taskOverview: [],
     };
 
@@ -157,6 +162,10 @@ export async function updateProject(
         return null;
     }
 
+    const selectedMembers = mockAvailableUsers.filter((user) =>
+        payload.memberIds?.includes(user.id),
+    );
+
     projects[projectIndex] = {
         ...projects[projectIndex],
         name: payload.name,
@@ -164,6 +173,7 @@ export async function updateProject(
         startDate: payload.startDate,
         plannedEndDate: payload.plannedEndDate ?? projects[projectIndex].plannedEndDate,
         status: payload.status,
+        members: selectedMembers,
         membersCount: payload.memberIds?.length ?? projects[projectIndex].membersCount,
     };
 

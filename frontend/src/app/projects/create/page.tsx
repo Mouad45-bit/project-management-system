@@ -1,25 +1,45 @@
 // src/app/projects/create/page.tsx
 
+"use client";
+
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 import { PageHeader } from "@/components/ui/PageHeader";
+import { ProjectForm } from "@/components/projects/ProjectForm";
+import { createProject } from "@/services/projectApi";
+import type { ProjectCreateRequest } from "@/types/project";
 
 export default function CreateProjectPage() {
+    const router = useRouter();
+
+    async function handleCreateProject(payload: ProjectCreateRequest) {
+        const createdProject = await createProject(payload);
+        router.push(`/projects/${createdProject.id}`);
+    }
+
     return (
         <>
             <PageHeader
                 eyebrow="Création"
                 title="Nouveau projet"
-                description="Cette page contiendra le formulaire de création d’un projet avec sélection des membres et validation des dates."
+                description="Créez un projet, définissez sa planification initiale et désignez les membres qui participeront à sa réalisation."
+                actions={
+                    <Link
+                        href="/projects"
+                        className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                    >
+                        <ArrowLeft size={17} />
+                        Retour aux projets
+                    </Link>
+                }
             />
 
-            <section className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center">
-                <h2 className="text-lg font-semibold text-slate-950">
-                    Formulaire de création
-                </h2>
-                <p className="mt-2 text-sm text-slate-600">
-                    Le formulaire sera développé dans la phase dédiée à la création de
-                    projet.
-                </p>
-            </section>
+            <ProjectForm
+                mode="create"
+                cancelHref="/projects"
+                onSubmit={handleCreateProject}
+            />
         </>
     );
 }

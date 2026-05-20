@@ -22,7 +22,6 @@ export function ProjectFilters
 ({
      search,
      status,
-     totalElements,
      onSearchChange,
      onStatusChange,
 }: ProjectFiltersProps) {

@@ -49,14 +49,6 @@ export default function ProjectsPage() {
     }, [loadProjects]);
 
     async function handleArchive(projectId: number) {
-        const confirmed = window.confirm(
-            "Voulez-vous vraiment archiver ce projet ?",
-        );
-
-        if (!confirmed) {
-            return;
-        }
-
         await archiveProject(projectId);
         await loadProjects();
     }

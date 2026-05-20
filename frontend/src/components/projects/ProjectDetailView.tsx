@@ -5,7 +5,6 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
-    ArrowLeft,
     CalendarDays,
     Hash,
     Pencil,
@@ -90,15 +89,17 @@ export function ProjectDetailView({ projectId, backHref }: ProjectDetailViewProp
                 backHref={backHref}
                 backLabel="Retour"
                 actions={
-                    <Link
-                        href={`/projects/${project.id}/update?returnTo=${encodeURIComponent(
-                            `/projects/${project.id}?returnTo=${encodeURIComponent(backHref)}`,
-                        )}`}
-                        className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 text-sm font-semibold text-white transition hover:bg-slate-800"
-                    >
-                        <Pencil size={17} className="text-white" />
-                        <span className="text-white">Modifier</span>
-                    </Link>
+                    !project.archived ? (
+                        <Link
+                            href={`/projects/${project.id}/update?returnTo=${encodeURIComponent(
+                                `/projects/${project.id}?returnTo=${encodeURIComponent(backHref)}`,
+                            )}`}
+                            className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 text-sm font-semibold text-white transition hover:bg-slate-800"
+                        >
+                            <Pencil size={17} className="text-white" />
+                            <span className="text-white">Modifier</span>
+                        </Link>
+                    ) : null
                 }
             />
 

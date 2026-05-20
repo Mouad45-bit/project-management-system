@@ -3,7 +3,7 @@
 "use client";
 
 import Link from "next/link";
-import {useState} from "react";
+import {useMemo, useState} from "react";
 import {
     CalendarDays,
     ClipboardList,
@@ -65,6 +65,45 @@ export function ProjectForm
 
     const isEditMode = mode === "edit";
 
+    const initialSnapshot = useMemo(() => {
+        return {
+            name: initialValues?.name ?? "",
+            description: initialValues?.description ?? "",
+            startDate: formatIsoDateToFrenchInput(initialValues?.startDate),
+            plannedEndDate: formatIsoDateToFrenchInput(initialValues?.plannedEndDate),
+            status: initialValues?.status ?? "WAITING",
+            memberIds: normalizeMemberIds(initialValues?.memberIds ?? []),
+        };
+    }, [initialValues]);
+
+    const currentSnapshot = {
+        name,
+        description,
+        startDate,
+        plannedEndDate,
+        status,
+        memberIds: normalizeMemberIds(memberIds),
+    };
+
+    const hasRequiredFields =
+        name.trim().length > 0 &&
+        startDate.trim().length === 10 &&
+        Boolean(status);
+
+    const hasFormChanged =
+        currentSnapshot.name !== initialSnapshot.name ||
+        currentSnapshot.description !== initialSnapshot.description ||
+        currentSnapshot.startDate !== initialSnapshot.startDate ||
+        currentSnapshot.plannedEndDate !== initialSnapshot.plannedEndDate ||
+        currentSnapshot.status !== initialSnapshot.status ||
+        !areNumberArraysEqual(currentSnapshot.memberIds, initialSnapshot.memberIds);
+
+    const canSubmit = isEditMode
+        ? hasRequiredFields && hasFormChanged
+        : hasRequiredFields;
+
+    const isSubmitDisabled = isSubmitting || !canSubmit;
+
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
 
@@ -111,7 +150,7 @@ export function ProjectForm
     }
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid items-stretch gap-6 xl:grid-cols-[1fr_420px]">
                 <div className="space-y-6">
                     <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -236,27 +275,46 @@ export function ProjectForm
                 </aside>
             </div>
 
-            <div className="flex flex-col-reverse justify-end gap-3 sm:flex-row">
-                <Link
-                    href={cancelHref}
-                    className="inline-flex h-11 items-center justify-center rounded-xl border border-slate-200 bg-white px-5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
-                >
-                    Annuler
-                </Link>
+            <div className="space-y-1.5">
+                <p className="min-h-2 text-right text-sm font-medium text-slate-500">
+                    {!isEditMode && !hasRequiredFields
+                        ? "Complétez le nom du projet et la date de début pour créer le projet."
+                        : isEditMode && !hasFormChanged
+                            ? "Aucune modification détectée pour le moment."
+                            : isEditMode && hasFormChanged && !hasRequiredFields
+                                ? "Complétez les champs obligatoires pour sauvegarder les modifications."
+                                : "\u00A0"}
+                </p>
 
-                <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="inline-flex cursor-pointer h-11 items-center justify-center gap-2 rounded-xl bg-slate-900 px-5 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                    <Save size={17} />
-                    {isSubmitting
-                        ? "Enregistrement..."
-                        : isEditMode
-                            ? "Sauvegarder les modifications"
-                            : "Créer le projet"
-                    }
-                </button>
+                <div className="flex flex-col-reverse justify-end gap-3 sm:flex-row">
+                    <Link
+                        href={cancelHref}
+                        className="inline-flex h-11 items-center justify-center rounded-xl border border-slate-200 bg-white px-5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                    >
+                        Annuler
+                    </Link>
+
+                    <button
+                        type="submit"
+                        disabled={isSubmitDisabled}
+                        title={
+                            isEditMode && !hasFormChanged
+                                ? "Aucune modification détectée"
+                                : !hasRequiredFields
+                                    ? "Complétez les champs obligatoires"
+                                    : undefined
+                        }
+                        className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-slate-900 px-5 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-slate-900"
+                    >
+                        <Save size={17} />
+                        {isSubmitting
+                            ? "Enregistrement..."
+                            : isEditMode
+                                ? "Sauvegarder"
+                                : "Créer"
+                        }
+                    </button>
+                </div>
             </div>
         </form>
     );
@@ -284,4 +342,16 @@ function FieldError({message}: { message?: string }) {
     }
 
     return <p className="mt-2 text-sm font-medium text-red-600">{message}</p>;
+}
+
+function normalizeMemberIds(ids: number[]): number[] {
+    return [...ids].sort((firstId, secondId) => firstId - secondId);
+}
+
+function areNumberArraysEqual(first: number[], second: number[]): boolean {
+    if (first.length !== second.length) {
+        return false;
+    }
+
+    return first.every((value, index) => value === second[index]);
 }

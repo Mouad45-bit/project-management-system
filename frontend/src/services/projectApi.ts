@@ -68,7 +68,9 @@ async function requestVoid(
     }
 }
 
-function buildQueryString(params: Record<string, string | number | boolean | undefined>) {
+function buildQueryString(
+    params: Record<string, string | number | boolean | undefined>,
+) {
     const searchParams = new URLSearchParams();
 
     Object.entries(params).forEach(([key, value]) => {

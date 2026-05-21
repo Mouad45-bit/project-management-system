@@ -124,6 +124,39 @@ export function ProjectEditView({ projectId, backHref }: ProjectEditViewProps) {
         );
     }
 
+    if (project.archived) {
+        return (
+            <>
+                <PageHeader
+                    eyebrow={project.code}
+                    title="Modification impossible"
+                    description="Ce projet est archivé. Vous devez le restaurer avant de pouvoir le modifier."
+                    showBackButton
+                    backHref={backHref}
+                    backLabel="Retour"
+                    actions={
+                        <Link
+                            href={`/projects/${project.id}?returnTo=${encodeURIComponent(
+                                backHref,
+                            )}`}
+                            className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 text-sm font-semibold text-white transition hover:bg-slate-800"
+                        >
+                            <Eye size={17} className="text-white" />
+                            <span className="text-white">Voir détail</span>
+                        </Link>
+                    }
+                />
+
+                <section className="flex gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+                    <AlertTriangle size={18} className="mt-0.5 shrink-0" />
+                    <p>
+                        Ce projet est archivé et ne peut pas être modifié.
+                    </p>
+                </section>
+            </>
+        );
+    }
+
     return (
         <>
             <PageHeader
@@ -145,16 +178,6 @@ export function ProjectEditView({ projectId, backHref }: ProjectEditViewProps) {
                     </Link>
                 }
             />
-
-            {project.archived ? (
-                <section className="mb-6 flex gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
-                    <AlertTriangle size={18} className="mt-0.5 shrink-0" />
-                    <p>
-                        Ce projet est archivé. Dans la version backend finale, la
-                        modification pourra être bloquée selon les règles métier.
-                    </p>
-                </section>
-            ) : null}
 
             {submitError ? (
                 <section className="mb-6 flex gap-3 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">

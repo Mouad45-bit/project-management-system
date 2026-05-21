@@ -64,13 +64,12 @@ public class ProjectService {
         String generatedCode = projectCodeGeneratorService.generateNextCode();
 
         Project project = projectMapper.toEntity(request, generatedCode);
+        Project savedProject = projectRepository.saveAndFlush(project);
 
-        projectMemberService.synchronizeProjectMembers(
-                project,
+        projectMemberService.replaceProjectMembers(
+                savedProject,
                 request.memberIds()
         );
-
-        Project savedProject = projectRepository.save(project);
 
         return buildProjectDetailResponse(savedProject.getId());
     }
@@ -80,7 +79,7 @@ public class ProjectService {
             Long projectId,
             ProjectUpdateRequest request
     ) {
-        Project project = findProjectDetailOrThrow(projectId);
+        Project project = findProjectOrThrow(projectId);
 
         if (project.isArchived()) {
             throw ProjectBusinessException.archivedProjectModification(projectId);
@@ -88,12 +87,12 @@ public class ProjectService {
 
         projectMapper.updateEntity(project, request);
 
-        projectMemberService.synchronizeProjectMembers(
-                project,
+        Project savedProject = projectRepository.saveAndFlush(project);
+
+        projectMemberService.replaceProjectMembers(
+                savedProject,
                 request.memberIds()
         );
-
-        Project savedProject = projectRepository.save(project);
 
         return buildProjectDetailResponse(savedProject.getId());
     }
@@ -127,18 +126,16 @@ public class ProjectService {
             Long projectId,
             ProjectMembersUpdateRequest request
     ) {
-        Project project = findProjectDetailOrThrow(projectId);
+        Project project = findProjectOrThrow(projectId);
 
         if (project.isArchived()) {
             throw ProjectBusinessException.archivedProjectModification(projectId);
         }
 
-        projectMemberService.synchronizeProjectMembers(
+        projectMemberService.replaceProjectMembers(
                 project,
                 request.memberIds()
         );
-
-        projectRepository.save(project);
 
         return projectMemberService.getProjectMembers(projectId);
     }

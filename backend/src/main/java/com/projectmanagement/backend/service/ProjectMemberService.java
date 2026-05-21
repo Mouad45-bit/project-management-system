@@ -13,13 +13,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -33,12 +30,25 @@ public class ProjectMemberService {
     private final WorkloadService workloadService;
 
     @Transactional
-    public void synchronizeProjectMembers(Project project, List<Long> memberIds) {
+    public void replaceProjectMembers(Project project, List<Long> memberIds) {
+        if (project == null || project.getId() == null) {
+            throw new ProjectBusinessException(
+                    "Impossible de mettre à jour les membres d'un projet non sauvegardé."
+            );
+        }
+
         List<Long> normalizedMemberIds = normalizeMemberIds(memberIds);
         Map<Long, User> usersById = loadActiveUsersById(normalizedMemberIds);
 
-        removeUnselectedMembers(project, normalizedMemberIds);
-        addNewSelectedMembers(project, normalizedMemberIds, usersById);
+        projectMemberRepository.deleteByProject_Id(project.getId());
+        projectMemberRepository.flush();
+
+        List<ProjectMember> newMembers = normalizedMemberIds
+                .stream()
+                .map(userId -> new ProjectMember(project, usersById.get(userId)))
+                .toList();
+
+        projectMemberRepository.saveAll(newMembers);
     }
 
     @Transactional(readOnly = true)
@@ -122,51 +132,6 @@ public class ProjectMemberService {
         }
 
         return usersById;
-    }
-
-    private void removeUnselectedMembers(Project project, List<Long> normalizedMemberIds) {
-        Set<Long> selectedUserIds = new LinkedHashSet<>(normalizedMemberIds);
-        Iterator<ProjectMember> iterator = project.getMembers().iterator();
-
-        while (iterator.hasNext()) {
-            ProjectMember member = iterator.next();
-
-            if (member.getUser() == null) {
-                iterator.remove();
-                continue;
-            }
-
-            Long currentUserId = member.getUser().getId();
-
-            if (!selectedUserIds.contains(currentUserId)) {
-                User user = member.getUser();
-
-                iterator.remove();
-                user.getProjectMemberships().remove(member);
-
-                member.setProject(null);
-                member.setUser(null);
-            }
-        }
-    }
-
-    private void addNewSelectedMembers(
-            Project project,
-            List<Long> normalizedMemberIds,
-            Map<Long, User> usersById
-    ) {
-        Set<Long> existingUserIds = project
-                .getMembers()
-                .stream()
-                .filter(member -> member.getUser() != null)
-                .map(member -> member.getUser().getId())
-                .collect(Collectors.toSet());
-
-        for (Long userId : normalizedMemberIds) {
-            if (!existingUserIds.contains(userId)) {
-                project.addMember(usersById.get(userId));
-            }
-        }
     }
 
     private String normalizeSearch(String search) {

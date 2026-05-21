@@ -23,7 +23,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
     @EntityGraph(attributePaths = {"members", "members.user"})
     @Query("""
-            select project
+            select distinct project
             from Project project
             where project.id = :id
             """)

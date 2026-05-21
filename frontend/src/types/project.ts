@@ -2,6 +2,13 @@
 
 export type ProjectStatus = "WAITING" | "IN_PROGRESS" | "COMPLETED";
 
+export type ProjectTaskStatus =
+    | "TODO"
+    | "IN_PROGRESS"
+    | "TO_VALIDATE"
+    | "COMPLETED"
+    | "BLOCKED";
+
 export interface ProjectCreateRequest {
     name: string;
     description?: string;
@@ -55,6 +62,15 @@ export interface ProjectMemberResponse {
     overloaded: boolean;
 }
 
+export interface ProjectTaskOverviewItem {
+    id: number;
+    title: string;
+    status: ProjectTaskStatus;
+    assigneeName?: string;
+    dueDate?: string;
+    late: boolean;
+}
+
 export interface ProjectDetailResponse {
     id: number;
     code: string;
@@ -68,5 +84,5 @@ export interface ProjectDetailResponse {
     membersCount: number;
     summary: ProjectSummaryResponse;
     members: ProjectMemberResponse[];
-    taskOverview: unknown[];
+    taskOverview: ProjectTaskOverviewItem[];
 }
